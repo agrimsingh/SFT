@@ -271,9 +271,9 @@ public class SecStore_CP1 {
 			long startTime = System.nanoTime();
 			byte[] decryptedFile = decrypt(encryptedfile, server_privateKey);
 			long endTime = System.nanoTime();
-			System.out.println("Time Taken to decrypt "+encryptedfile.length + " bytes "+((endTime-startTime)/1000000.0)+" ms");
+			System.out.println("Time Taken to decrypt "+encryptedfile.length + " bytes: "+((endTime-startTime)/1000000.0)+" ms");
 		
-			FileOutputStream fOutputStream = new FileOutputStream("G:\\javaworkspace\\SFT\\tests"+Calendar.getInstance().getTime().getTime());
+			FileOutputStream fOutputStream = new FileOutputStream("G:\\javaworkspace\\SFT\\tests\\"+Calendar.getInstance().getTime().getTime()+".txt");
 			fOutputStream.write(decryptedFile);
 			fOutputStream.close();
 

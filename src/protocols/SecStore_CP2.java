@@ -341,7 +341,7 @@ public class SecStore_CP2 {
 			long startTime = System.nanoTime();
 			byte[] decryptedFile = decryptWithAES(encryptedfile, sessionKey);
 			long endTime = System.nanoTime();
-			System.out.println("Time Taken to decrypt "+ encryptedfile.length + " bytes "+((endTime-startTime)/1000000.0)+" ms");
+			System.out.println("Time Taken to decrypt "+ encryptedfile.length + " bytes: "+((endTime-startTime)/1000000.0)+" ms");
 		
 				
 			dataInputStream.close();
