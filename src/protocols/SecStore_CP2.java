@@ -1,7 +1,5 @@
 package protocols;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,19 +7,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
@@ -32,7 +24,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
 public class SecStore_CP2 {
@@ -41,14 +32,7 @@ public class SecStore_CP2 {
 
 	private static DataInputStream dataInputStream;
 	private static DataOutputStream dataOutputStream;
-	
-	/**
-	 * encrypt text using private key
-	 * @param plaintext
-	 * @param privateKey
-	 * @return
-	 * @throws Exception
-	 */
+
 	public static byte[] encrypt(String plaintext, PrivateKey privateKey) throws Exception{
 	    Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());
 	    byte[] privateKeyBytes = privateKey.getEncoded();
@@ -79,13 +63,6 @@ public class SecStore_CP2 {
 	    return baos.toByteArray();
 	}
 
-	/**
-	 * encrypt text using private key
-	 * @param nonce
-	 * @param privateKey
-	 * @return
-	 * @throws Exception
-	 */
 	public static byte[] encrypt(byte[] bytes, PrivateKey privateKey) throws Exception{
 	    Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());
 	    byte[] privateKeyBytes = privateKey.getEncoded();
@@ -115,12 +92,6 @@ public class SecStore_CP2 {
 	    return baos.toByteArray();
 	}
 
-	/**
-	 * get private key from file
-	 * @param filename
-	 * @return
-	 * @throws Exception
-	 */
 	public static PrivateKey getPrivateKey(String filename)
 	throws Exception {
 
@@ -136,12 +107,6 @@ public class SecStore_CP2 {
 		return kf.generatePrivate(spec);
 	}
 
-	/**
-	 * 
-	 * @param filename
-	 * @return
-	 * @throws Exception
-	 */
 	public static PublicKey getPublicKey(String filename)
 	throws Exception {
 		File f = new File(filename);
@@ -155,46 +120,19 @@ public class SecStore_CP2 {
 		KeyFactory kf = KeyFactory.getInstance("RSA");
 		return kf.generatePublic(spec);
 	}
-	
-	/**
-	 * decrypt using private key
-	 * @param encryptedMessage
-	 * @param publicKey
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws NoSuchPaddingException
-	 * @throws InvalidKeyException
-	 * @throws IllegalBlockSizeException
-	 * @throws BadPaddingException
-	 */
+
 	public static byte[] decrypt(byte[] encryptedMessage , PrivateKey privateKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException
 	{
 		Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());
 		cipher.init(cipher.DECRYPT_MODE, privateKey);
 		return cipher.doFinal(encryptedMessage);
 	}
-	
-	/**
-	 * regenerates secret key
-	 * @param bytes
-	 * @return
-	 */
+
 	private static SecretKey regenerateSecretKey(byte[] bytes)
 	{
 		return new SecretKeySpec(bytes, 0, bytes.length, "AES");
 	}
 	
-	/**
-	 * encrypt method with AES
-	 * @param bytes
-	 * @param secretKey
-	 * @return
-	 * @throws InvalidKeyException 
-	 * @throws NoSuchPaddingException 
-	 * @throws NoSuchAlgorithmException 
-	 * @throws BadPaddingException 
-	 * @throws IllegalBlockSizeException 
-	 */
 	private static byte[] encryptWithAES(byte[] bytes, SecretKey secretKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException
 	{
 		Cipher cipher = Cipher.getInstance(secretKey.getAlgorithm());
@@ -205,18 +143,7 @@ public class SecStore_CP2 {
 	    
 	    return cipher.doFinal(bytes, 0, bytes.length);
 	}
-	
-	/**
-	 * decrypt method with AES
-	 * @param bytes
-	 * @param secretKey
-	 * @return
-	 * @throws InvalidKeyException 
-	 * @throws NoSuchPaddingException 
-	 * @throws NoSuchAlgorithmException 
-	 * @throws BadPaddingException 
-	 * @throws IllegalBlockSizeException 
-	 */
+
 	private static byte[] decryptWithAES(byte[] bytes, SecretKey secretKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException
 	{
 		Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
@@ -227,11 +154,7 @@ public class SecStore_CP2 {
 	    
 	    return cipher.doFinal(bytes, 0, bytes.length);
 	}
-	/**
-	 * reads the bytes from server
-	 * @return 
-	 * @throws IOException
-	 */
+
 	public static byte[] readBytes() throws IOException
 	{
 		try {
@@ -261,12 +184,7 @@ public class SecStore_CP2 {
 		}
 		return null;
 	}
-	/**
-	 * send byte[] to server
-	 * @param byteMessage
-	 * @param length
-	 * @throws IOException
-	 */
+
 	public static void sendBytes(byte[] byteMessage, int length) throws IOException
 	{
 		if(length>0)
@@ -295,6 +213,7 @@ public class SecStore_CP2 {
 	public static void main(String[] args) throws Exception {
 		InputStream CACertStream = new FileInputStream("G:\\javaworkspace\\SFT\\cert\\CA.crt");
 
+		@SuppressWarnings("unused")
 		X509Certificate CAcert = X509Certificate.getInstance(CACertStream);
 
 		InputStream serverCertificateInputStream = new FileInputStream("G:\\javaworkspace\\SFT\\cert\\Ha Duc Tien ._server_1209.crt");
@@ -303,13 +222,13 @@ public class SecStore_CP2 {
 
 		PrivateKey server_privateKey = getPrivateKey("G:\\javaworkspace\\SFT\\cert\\privateServer.der");
 		
+		@SuppressWarnings("unused")
 		PublicKey server_publicKey = getPublicKey("G:\\javaworkspace\\SFT\\cert\\publicServer.der");
 		
+		@SuppressWarnings("resource")
 		ServerSocket serverSocket = new ServerSocket(4321);
 		try {
-			Socket connection = serverSocket.accept();
-			String firsthandshake = "This is the server";
-			
+			Socket connection = serverSocket.accept();			
 			dataInputStream = new DataInputStream(connection.getInputStream());
 			dataOutputStream = new DataOutputStream(connection.getOutputStream());
 	
@@ -341,7 +260,7 @@ public class SecStore_CP2 {
 			long startTime = System.nanoTime();
 			byte[] decryptedFile = decryptWithAES(encryptedfile, sessionKey);
 			long endTime = System.nanoTime();
-			System.out.println("Time Taken to decrypt "+ encryptedfile.length + " bytes: "+((endTime-startTime)/1000000.0)+" ms");
+			System.out.println("Time taken to decrypt "+ encryptedfile.length + " bytes: "+((endTime-startTime)/1000000.0)+" ns");
 		
 				
 			dataInputStream.close();

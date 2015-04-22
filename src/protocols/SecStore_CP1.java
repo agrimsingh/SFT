@@ -1,7 +1,5 @@
 package protocols;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,19 +8,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
@@ -32,7 +24,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
 public class SecStore_CP1 {
@@ -42,13 +33,6 @@ public class SecStore_CP1 {
 	private static DataInputStream dataInputStream;
 	private static DataOutputStream dataOutputStream;
 	
-	/**
-	 * encrypt text using private key
-	 * @param nonce
-	 * @param privateKey
-	 * @return
-	 * @throws Exception
-	 */
 	public static byte[] encrypt(byte[] bytes, PrivateKey privateKey) throws Exception{
 
 		Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -79,12 +63,6 @@ public class SecStore_CP1 {
 	    return baos.toByteArray();
 	}
 
-	/**
-	 * get private key from file
-	 * @param filename
-	 * @return
-	 * @throws Exception
-	 */
 	public static PrivateKey getPrivateKey(String filename)
 	throws Exception {
 
@@ -100,12 +78,6 @@ public class SecStore_CP1 {
 		return kf.generatePrivate(spec);
 	}
 
-	/**
-	 * 
-	 * @param filename
-	 * @return
-	 * @throws Exception
-	 */
 	public static PublicKey getPublicKey(String filename)
 	throws Exception {
 		File f = new File(filename);
@@ -120,18 +92,7 @@ public class SecStore_CP1 {
 		return kf.generatePublic(spec);
 	}
 	
-	/**
-	 * decrypt using private key
-	 * @param encryptedMessage
-	 * @param publicKey
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws NoSuchPaddingException
-	 * @throws InvalidKeyException
-	 * @throws IllegalBlockSizeException
-	 * @throws BadPaddingException
-	 * @throws IOException 
-	 */
+	@SuppressWarnings("static-access")
 	public static byte[] decrypt(byte[] bytes , PrivateKey privateKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException
 	{
 
@@ -160,12 +121,6 @@ public class SecStore_CP1 {
 	    return baos.toByteArray();
 	}
 
-
-	/**
-	 * reads the bytes from server
-	 * @return 
-	 * @throws IOException
-	 */
 	public static byte[] readBytes() throws IOException
 	{
 		try {
@@ -174,7 +129,8 @@ public class SecStore_CP1 {
 			
 			for(int i = 0; i < (len/FILE_TRANSFER_BLOCK_SIZE + 1); i++)
 		    {
-		        int start = i * FILE_TRANSFER_BLOCK_SIZE;
+		        @SuppressWarnings("unused")
+				int start = i * FILE_TRANSFER_BLOCK_SIZE;
 		        int blockLength;
 		        if(i == len/FILE_TRANSFER_BLOCK_SIZE)
 		        {
@@ -196,13 +152,6 @@ public class SecStore_CP1 {
 		return null;
 	}
 
-
-	/**
-	 * send byte[] to server
-	 * @param byteMessage
-	 * @param length
-	 * @throws IOException
-	 */
 	public static void sendBytes(byte[] byteMessage, int length) throws IOException
 	{
 		if(length>0)
@@ -231,6 +180,7 @@ public class SecStore_CP1 {
 	public static void main(String[] args) throws Exception {
 		InputStream CACertStream = new FileInputStream("G:\\javaworkspace\\SFT\\cert\\CA.crt");
 
+		@SuppressWarnings("unused")
 		X509Certificate CAcert = X509Certificate.getInstance(CACertStream);
 
 		InputStream serverCertificateInputStream = new FileInputStream("G:\\javaworkspace\\SFT\\cert\\Ha Duc Tien ._server_1209.crt");
@@ -239,13 +189,13 @@ public class SecStore_CP1 {
 
 		PrivateKey server_privateKey = getPrivateKey("G:\\javaworkspace\\SFT\\cert\\privateServer.der");
 		
+		@SuppressWarnings("unused")
 		PublicKey server_publicKey = getPublicKey("G:\\javaworkspace\\SFT\\cert\\publicServer.der");
 		
+		@SuppressWarnings("resource")
 		ServerSocket serverSocket = new ServerSocket(4321);
 		try {
 			Socket connection = serverSocket.accept();
-			String firsthandshake = "This is the server";
-			
 			dataInputStream = new DataInputStream(connection.getInputStream());
 			dataOutputStream = new DataOutputStream(connection.getOutputStream());
 	
@@ -271,7 +221,7 @@ public class SecStore_CP1 {
 			long startTime = System.nanoTime();
 			byte[] decryptedFile = decrypt(encryptedfile, server_privateKey);
 			long endTime = System.nanoTime();
-			System.out.println("Time Taken to decrypt "+encryptedfile.length + " bytes: "+((endTime-startTime)/1000000.0)+" ms");
+			System.out.println("Time taken to decrypt "+encryptedfile.length + " bytes: "+((endTime-startTime)/1000000.0)+" ns");
 		
 			FileOutputStream fOutputStream = new FileOutputStream("G:\\javaworkspace\\SFT\\tests\\"+Calendar.getInstance().getTime().getTime()+".txt");
 			fOutputStream.write(decryptedFile);
